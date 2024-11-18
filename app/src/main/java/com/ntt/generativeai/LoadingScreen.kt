@@ -36,7 +36,8 @@ internal fun LoadingRoute(
         LoadingIndicator()
     }
 
-    LaunchedEffect(Unit, block = {
+    // disabilito perchè stefano non è capace a far funzionare l'app
+    /*LaunchedEffect(Unit, block = {
         // Create the LlmInference in a separate thread
         withContext(Dispatchers.IO) {
             try {
@@ -49,7 +50,7 @@ internal fun LoadingRoute(
                 errorMessage = e.localizedMessage ?: "UnknownError"
             }
         }
-    })
+    })*/
 }
 
 @Composable
