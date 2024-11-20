@@ -17,14 +17,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ntt.generativeai.summary.SummaryRoute
 import com.ntt.generativeai.ui.AnalyzeScreen
-import com.ntt.generativeai.ui.CameraScreen
+import com.ntt.generativeai.camera.CameraScreen
 import com.ntt.generativeai.ui.theme.GenerativeAITheme
 import java.io.File
 
 const val LOADING_SCREEN = "loading_screen"
 const val CAMERA_SCREEN = "camera_screen"
 const val ANALYZE_SCREEN = "analyze_screen"
-const val SUMMARY_SCREEN = "summary_screen"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,12 +44,12 @@ class MainActivity : ComponentActivity() {
 
                         NavHost(
                             navController = navController,
-                            startDestination = CAMERA_SCREEN
+                            startDestination = LOADING_SCREEN
                         ) {
                             composable(LOADING_SCREEN) {
                                 LoadingRoute(
                                     onModelLoaded = {
-                                        navController.navigate(SUMMARY_SCREEN) {
+                                        navController.navigate(CAMERA_SCREEN) {
                                             popUpTo(LOADING_SCREEN) { inclusive = true }
                                             launchSingleTop = true
                                         }
@@ -58,12 +57,8 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable(SUMMARY_SCREEN) {
-                                SummaryRoute()
-                            }
-
                             composable(ANALYZE_SCREEN) {
-                                AnalyzeScreen(Modifier, scanned)
+                                SummaryRoute(scanned)
                             }
 
                             composable(CAMERA_SCREEN) {

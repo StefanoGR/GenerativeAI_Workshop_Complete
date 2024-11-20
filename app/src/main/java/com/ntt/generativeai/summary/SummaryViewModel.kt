@@ -5,57 +5,102 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.ntt.generativeai.InferenceModel
+import com.ntt.generativeai.getBitmap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class SummaryViewModel(
-    private val inferenceModel: InferenceModel
+    private val inferenceModel: InferenceModel,
+    val scanned: List<File>
 ) : ViewModel() {
 
+    private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
     companion object {
-        fun getFactory(context: Context) = object : ViewModelProvider.Factory {
+        fun getFactory(context: Context,  scanned: List<File>) = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val inferenceModel = InferenceModel.getInstance(context)
-                return SummaryViewModel(inferenceModel) as T
+                return SummaryViewModel(inferenceModel, scanned = scanned) as T
             }
         }
     }
-
     init {
-        //TODO remove
-        createSummary("Android is a mobile operating system based on a modified version of the Linux kernel and other open-source software, designed primarily for touchscreen-based mobile devices such as smartphones and tablets. It is the world's most widely used operating system due to it being used on most smartphones and tablets outside of iPhones and iPads, which use Apple's iOS and iPadOS,[a] respectively. As of October 2024, Android accounts for 45% of the global operating system market, followed by Windows with 26%.[4]\n" +
-                "\n" +
-                "Android has historically been developed by a consortium of developers known as the Open Handset Alliance, but its most widely used version is primarily developed by Google. It was unveiled in November 2007, with the first commercial Android device, the HTC Dream, being launched in September 2008.\n" +
-                "\n" +
-                "At its core, the operating system is known as the Android Open Source Project (AOSP)[5] and is free and open-source software (FOSS) primarily licensed under the Apache License. However, most devices run the proprietary Android version developed by Google, which ships with additional proprietary closed-source software pre-installed,[6] most notably Google Mobile Services (GMS),[7] which includes core apps such as Google Chrome, the digital distribution platform Google Play, and the associated Google Play Services development platform. Firebase Cloud Messaging is used for push notifications. While AOSP is free, the \"Android\" name and logo are trademarks of Google, which imposes standards to restrict the use of Android branding by \"uncertified\" devices outside their ecosystem.[8][9]")
+        analyzeText()
     }
 
     private val _uiState: MutableStateFlow<SummaryUiState> = MutableStateFlow(SummaryUiState(""))
     val uiState: StateFlow<SummaryUiState> =
         _uiState.asStateFlow()
 
-
-    fun createSummary(text: String) {
+    fun analyzeText(){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                val result = StringBuilder("")
-                inferenceModel.generateResponseAsync(text)
-                inferenceModel.partialResults
-                    .collectIndexed { index, (partialResult, done) ->
-                        result.append(partialResult)
-                        _uiState.value = SummaryUiState(result.toString())
-                        if (done) {
-                            //TODO
-                        }
-                    }
-            }.onFailure { //error
+            runCatching {
+                val results = scanned.mapIndexed { index, file ->
+                    index to processImage(file)
+                }.toMap()
+
+                createSummary(results.toSortedMap().values.joinToString(separator =" "))
             }
         }
+    }
+
+    private suspend fun processImage(file: File): String = suspendCancellableCoroutine { continuation ->
+        try {
+            val image = InputImage.fromBitmap(file.getBitmap(), 0)
+            textRecognizer.process(image)
+                .addOnSuccessListener { visionText ->
+                    if (!continuation.isCompleted) {
+                        continuation.resume(visionText.text)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    if (!continuation.isCompleted) {
+                        continuation.resumeWithException(e)
+                    }
+                }
+        } catch (e: Exception) {
+            if (!continuation.isCompleted) {
+                continuation.resumeWithException(e)
+            }
+        }
+    }
+
+
+    @OptIn(FlowPreview::class)
+    private suspend fun createSummary(text: String) {
+            kotlin.runCatching {
+                val result = StringBuilder()
+                inferenceModel.generateResponseAsync(text)
+
+                // Buffer updates using a flow
+                inferenceModel.partialResults
+                    .buffer()
+                    .debounce(200)
+                    .collectIndexed { index, (partialResult, done) ->
+                        result.append(partialResult)
+                        withContext(Dispatchers.Main) {
+                            _uiState.value = SummaryUiState(result.toString(), done)
+                        }
+                    }
+            }.onFailure { error ->
+                // Handle error
+            }
     }
 }
 

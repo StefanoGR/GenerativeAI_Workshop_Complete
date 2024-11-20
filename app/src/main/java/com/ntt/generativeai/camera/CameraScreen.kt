@@ -1,4 +1,4 @@
-package com.ntt.generativeai.ui
+package com.ntt.generativeai.camera
 
 import android.content.Context
 import android.util.Log
@@ -78,7 +78,8 @@ fun CameraScreen(modifier: Modifier, scanned: MutableList<File>, goToAnalyze: ()
                     .also {
                         it.setAnalyzer(
                             Executors.newSingleThreadExecutor(), MyImageAnalyzer(
-                                TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)))
+                                TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS))
+                        )
                     }
 
                 runCatching {

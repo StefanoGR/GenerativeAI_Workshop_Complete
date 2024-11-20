@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.ntt.generativeai.getBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -151,5 +152,3 @@ private fun salvaImmaginiInPdf(bitmaps: List<Bitmap>, filesDir: File) {
 
     //Toast.makeText(context, "PDF salvato in ${file.absolutePath}", Toast.LENGTH_LONG).show()
 }
-
-fun File.getBitmap() = BitmapFactory.decodeFile(absolutePath)

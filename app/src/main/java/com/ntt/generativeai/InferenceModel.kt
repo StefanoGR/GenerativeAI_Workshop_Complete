@@ -37,7 +37,7 @@ class InferenceModel private constructor(context: Context) {
 
     fun generateResponseAsync(text: String) {
         val prompt = "Please provide a comprehensive summary of the following text, capturing the main ideas, key arguments, and essential details while maintaining logical flow." +
-                "Aim to reduce the length to 20% of the original while preserving accuracy. This is the text:"+
+                "Aim to reduce the length to 30% of the original while preserving accuracy. This is the text (until the end of prompt):"+
                 text
 
         llmInference.generateResponseAsync(prompt)
