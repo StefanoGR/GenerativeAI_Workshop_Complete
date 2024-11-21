@@ -12,6 +12,7 @@ textRecognition = "16.0.1"
 composeBom = "2024.11.00"
 genai = "0.10.18"
 navigationCompose = "2.8.4"
+playServicesMlkitTextRecognitionCommon = "19.1.0"
 
 [libraries]
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
@@ -37,6 +38,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }
 mediapipe-genai = { group = "com.google.mediapipe", name = "tasks-genai", version.ref = "genai" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+play-services-mlkit-text-recognition-common = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-common", version.ref = "playServicesMlkitTextRecognitionCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
