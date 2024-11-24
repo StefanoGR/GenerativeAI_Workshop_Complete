@@ -1,4 +1,4 @@
-package com.ntt.generativeai
+package com.ntt.generativeai.llm
 import android.content.Context
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import java.io.File

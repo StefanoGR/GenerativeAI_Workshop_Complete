@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ntt.generativeai"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -84,4 +84,5 @@ dependencies {
     implementation(libs.androidx.camera.extensions)
 
     implementation(libs.text.recognition)
+    implementation(project(":llama"))
 }

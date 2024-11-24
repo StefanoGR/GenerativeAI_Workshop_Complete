@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,13 +13,14 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ntt.generativeai.summary.SummaryRoute
-import com.ntt.generativeai.ui.AnalyzeScreen
 import com.ntt.generativeai.camera.CameraScreen
 import com.ntt.generativeai.ui.theme.GenerativeAITheme
+import kotlinx.coroutines.launch
 import java.io.File
 
 const val LOADING_SCREEN = "loading_screen"
@@ -26,6 +28,8 @@ const val CAMERA_SCREEN = "camera_screen"
 const val ANALYZE_SCREEN = "analyze_screen"
 
 class MainActivity : ComponentActivity() {
+    val mainViewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -48,6 +52,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(LOADING_SCREEN) {
                                 LoadingRoute(
+                                    mainViewModel.llm,
                                     onModelLoaded = {
                                         navController.navigate(CAMERA_SCREEN) {
                                             popUpTo(LOADING_SCREEN) { inclusive = true }
@@ -58,12 +63,13 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(ANALYZE_SCREEN) {
-                                SummaryRoute(scanned)
+                                SummaryRoute(mainViewModel.llm.partialResults)
                             }
 
                             composable(CAMERA_SCREEN) {
                                 CameraScreen(Modifier, scanned) {
-                                    navController.navigate(ANALYZE_SCREEN)
+                                    mainViewModel.analyzeText(scanned)
+                                     navController.navigate(ANALYZE_SCREEN)
                                 }
                             }
                         }

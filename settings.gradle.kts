@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "GenerativeAI"
 include(":app")
+include(":llama")
  

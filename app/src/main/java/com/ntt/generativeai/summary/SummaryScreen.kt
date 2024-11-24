@@ -1,5 +1,6 @@
 package com.ntt.generativeai.summary
 
+import android.content.IntentSender.OnFinished
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +29,7 @@ import com.ntt.generativeai.createPdfFromText
 
 
 @Composable
-fun SummaryScreen(uiState: SummaryUiState) {
+fun SummaryScreen(result: String, hasFinished: Boolean) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
@@ -40,19 +41,19 @@ fun SummaryScreen(uiState: SummaryUiState) {
         Spacer(Modifier.height(20.dp))
 
         Text(
-            text = uiState.summary,
+            text = result,
         )
-        if (uiState.summary.isEmpty())
+        if (!hasFinished  && result.isEmpty())
             CircularProgressIndicator(
                 modifier = Modifier.width(64.dp).align(Alignment.CenterHorizontally),
                 color = MaterialTheme.colorScheme.secondary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
             )
-        if (uiState.completed) {
+            else{
             Row(modifier = Modifier.fillMaxWidth(), Arrangement.Center) {
                 Button(
                     onClick = {
-                        uiState.summary.createPdfFromText(context)
+                       // uiState.summary.createPdfFromText(context)
                     },
                     modifier = Modifier
                         .padding(16.dp),
@@ -68,5 +69,5 @@ fun SummaryScreen(uiState: SummaryUiState) {
 @Preview
 @Composable
 private fun Prev() {
-    SummaryScreen(SummaryUiState(""))
+    SummaryScreen("", false)
 }
