@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.mediapipe.genai)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.play.services.mlkit.text.recognition.common)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,4 +69,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // CameraX core library using the camera2 implementation
+    implementation(libs.androidx.camera.camera2)
+    // If you want to additionally use the CameraX Lifecycle library
+    implementation(libs.androidx.camera.lifecycle)
+    // If you want to additionally use the CameraX VideoCapture library
+    implementation(libs.androidx.camera.video)
+    // If you want to additionally use the CameraX View class
+    implementation(libs.androidx.camera.view)
+    // If you want to additionally add CameraX ML Kit Vision Integration
+    implementation(libs.androidx.camera.mlkit.vision)
+    // If you want to additionally use the CameraX Extensions library
+    implementation(libs.androidx.camera.extensions)
+
+    implementation(libs.text.recognition)
+    implementation(project(":llama"))
 }

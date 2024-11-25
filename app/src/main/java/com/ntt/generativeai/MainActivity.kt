@@ -4,31 +4,38 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ntt.generativeai.summary.SummaryRoute
+import com.ntt.generativeai.camera.CameraScreen
 import com.ntt.generativeai.ui.theme.GenerativeAITheme
+import kotlinx.coroutines.launch
+import java.io.File
 
 const val LOADING_SCREEN = "loading_screen"
 const val CAMERA_SCREEN = "camera_screen"
-const val SUMMARY_SCREEN = "summary_screen"
+const val ANALYZE_SCREEN = "analyze_screen"
 
 class MainActivity : ComponentActivity() {
+    val mainViewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             GenerativeAITheme {
+                val scanned = remember { mutableStateListOf<File>() }
                 Scaffold() { innerPadding ->
                     // A surface container using the 'background' color from the theme
                     Surface(
@@ -45,8 +52,9 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(LOADING_SCREEN) {
                                 LoadingRoute(
+                                    mainViewModel.llm,
                                     onModelLoaded = {
-                                        navController.navigate(SUMMARY_SCREEN) {
+                                        navController.navigate(CAMERA_SCREEN) {
                                             popUpTo(LOADING_SCREEN) { inclusive = true }
                                             launchSingleTop = true
                                         }
@@ -54,8 +62,15 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable(SUMMARY_SCREEN) {
-                                SummaryRoute()
+                            composable(ANALYZE_SCREEN) {
+                                SummaryRoute(mainViewModel.llm.partialResults)
+                            }
+
+                            composable(CAMERA_SCREEN) {
+                                CameraScreen(Modifier, scanned) {
+                                    mainViewModel.analyzeText(scanned)
+                                     navController.navigate(ANALYZE_SCREEN)
+                                }
                             }
                         }
                     }
