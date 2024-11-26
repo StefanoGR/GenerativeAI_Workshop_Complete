@@ -16,11 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ntt.generativeai.maps.MapsRoute
 import com.ntt.generativeai.summary.SummaryRoute
 import com.ntt.generativeai.ui.theme.GenerativeAITheme
 
 const val LOADING_SCREEN = "loading_screen"
-const val CAMERA_SCREEN = "camera_screen"
+const val MAPS_SCREEN = "maps_screen"
 const val SUMMARY_SCREEN = "summary_screen"
 
 class MainActivity : ComponentActivity() {
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
                             composable(LOADING_SCREEN) {
                                 LoadingRoute(
                                     onModelLoaded = {
-                                        navController.navigate(SUMMARY_SCREEN) {
+                                        navController.navigate(MAPS_SCREEN) {
                                             popUpTo(LOADING_SCREEN) { inclusive = true }
                                             launchSingleTop = true
                                         }
@@ -56,6 +57,10 @@ class MainActivity : ComponentActivity() {
 
                             composable(SUMMARY_SCREEN) {
                                 SummaryRoute()
+                            }
+
+                            composable(MAPS_SCREEN) {
+                                MapsRoute()
                             }
                         }
                     }
