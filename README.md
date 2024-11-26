@@ -28,15 +28,16 @@ For the best experience, we recommend:
 
 ### Android Emulator Requirements
 If using an emulator, configure it with:
-- API Level 29 or higher 
+- API Level 26 or higher 
 - At least 8GB of RAM
 - Virtual device storage: 6GB minimum
 
 ## LLM Setup Instructions 🤖
 
 1. Download the required model files:
-    - [LLAMA 3](https://huggingface.co/bartowski/Meta-Llama-3-8B-Instruct-GGUF)
-    - [Gemma LLM](https://drive.google.com/file/d/1-6IcEucPf5lurQmxo3notXrxkhG-ODZj/view?usp=sharing)
+   - [LLAMA 3](https://huggingface.co/bartowski/Meta-Llama-3-8B-Instruct-GGUF)
+   - [Stable LLM](https://huggingface.co/TheBloke/stablelm-zephyr-3b-GGUF)
+   - [Gemma LLM](https://drive.google.com/file/d/1-6IcEucPf5lurQmxo3notXrxkhG-ODZj/view?usp=sharing)
 
 2. Setup on Device:
    ```bash

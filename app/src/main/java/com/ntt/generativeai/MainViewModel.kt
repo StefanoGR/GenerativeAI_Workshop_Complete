@@ -6,7 +6,6 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.ntt.generativeai.llm.BaseLlm
-import com.ntt.generativeai.llm.GemmaInferenceModel
 import com.ntt.generativeai.llm.LlamaModel
 import com.ntt.generativeai.summary.SummaryUiState
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +19,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class MainViewModel(
-    val llm: BaseLlm = GemmaInferenceModel.getInstance()
+    val llm: BaseLlm = LlamaModel.getInstance()
 ) : ViewModel() {
 
     private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -36,7 +35,7 @@ class MainViewModel(
                     index to processImage(file)
                 }.toMap()
 
-                createSummary(results.toSortedMap().values.joinToString(separator =" "))
+                executePrompt(results.toSortedMap().values.joinToString(separator =" "))
             }
         }
     }
@@ -63,7 +62,7 @@ class MainViewModel(
     }
 
 
-    suspend fun createSummary(text: String) {
+    suspend fun executePrompt(text: String) {
             kotlin.runCatching {
                 llm.generateResponseAsync(text)
             }.onFailure { error ->

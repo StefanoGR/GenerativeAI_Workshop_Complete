@@ -57,10 +57,12 @@ fun SummaryScreen(result: String, hasFinished: Boolean) {
                 modifier = Modifier.padding(top = 24.dp),
                 text = "Summary:",
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.Black
             )
             Text(
                 text = result,
+                color = Color.Black
             )
             if (hasFinished)
                 Row(modifier = Modifier.fillMaxWidth(), Arrangement.Center) {

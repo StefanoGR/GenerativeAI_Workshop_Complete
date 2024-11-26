@@ -13,12 +13,15 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ntt.generativeai.camera.CameraScreen
 import com.ntt.generativeai.summary.SummaryRoute
 import com.ntt.generativeai.ui.theme.GenerativeAITheme
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.io.File
 
 const val LOADING_SCREEN = "loading_screen"
@@ -66,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
                             composable(CAMERA_SCREEN) {
                                 CameraScreen(Modifier, scanned) {
-                                    mainViewModel.analyzeText(scanned)
+                                     mainViewModel.analyzeText(scanned)
                                      navController.navigate(ANALYZE_SCREEN)
                                 }
                             }

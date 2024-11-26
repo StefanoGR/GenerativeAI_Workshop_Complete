@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -50,12 +49,11 @@ fun CameraScreen(modifier: Modifier, scanned: MutableList<File>, goToAnalyze: ()
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
     var imageAnalysis by remember { mutableStateOf<ImageAnalysis?>(null) }
 
-    // Richiesta dei permessi
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (!isGranted) {
-            Toast.makeText(context, "Permesso fotocamera richiesto", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -94,7 +92,7 @@ fun CameraScreen(modifier: Modifier, scanned: MutableList<File>, goToAnalyze: ()
                         //imageAnalysis
                     )
                 }.onFailure { exc ->
-                    Log.e("CameraPreview", "Errore di inizializzazione", exc)
+                    Log.e("CameraPreview", "Init error", exc)
                 }
                 previewView
             },
@@ -103,7 +101,7 @@ fun CameraScreen(modifier: Modifier, scanned: MutableList<File>, goToAnalyze: ()
 
         Button(
             onClick = {
-                scattaFoto(context, imageCapture) {
+                takePicture(context, imageCapture) {
                     scanned.add(it)
                 }
             },
@@ -112,7 +110,7 @@ fun CameraScreen(modifier: Modifier, scanned: MutableList<File>, goToAnalyze: ()
                 .padding(16.dp),
             shape = ButtonDefaults.outlinedShape
         ) {
-            Text("Scansiona")
+            Text("SCAN")
         }
 
         if (scanned.isNotEmpty()) Button(
@@ -124,12 +122,12 @@ fun CameraScreen(modifier: Modifier, scanned: MutableList<File>, goToAnalyze: ()
                 .padding(16.dp),
             shape = ButtonDefaults.outlinedShape
         ) {
-            Text("Termina (${scanned.size} fogli)")
+            Text("Analyze (#${scanned.size})")
         }
     }
 }
 
-private fun scattaFoto(context: Context, imageCapture: ImageCapture?, cb: (file: File) -> Unit) {
+private fun takePicture(context: Context, imageCapture: ImageCapture?, cb: (file: File) -> Unit) {
     val outputDirectory = context.filesDir
     val photoFile = File(
         outputDirectory,
@@ -143,12 +141,11 @@ private fun scattaFoto(context: Context, imageCapture: ImageCapture?, cb: (file:
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                //Toast.makeText(context, "Foto salvata: ${photoFile.absolutePath}", Toast.LENGTH_SHORT).show()
                 cb.invoke(photoFile)
             }
 
             override fun onError(exception: ImageCaptureException) {
-                Log.e("CameraPreview", "Errore nel salvare la foto: ${exception.message}", exception)
+                Log.e("CameraPreview", "Save photo error: ${exception.message}", exception)
             }
         }
     )

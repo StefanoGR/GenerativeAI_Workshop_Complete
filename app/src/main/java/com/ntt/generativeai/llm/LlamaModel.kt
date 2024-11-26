@@ -17,7 +17,7 @@ class LlamaModel : BaseLlm() {
     }
 
     override val MODEL_PATH: String
-        get() = "/data/local/tmp/llm/Meta-Llama-3-8B-Instruct-IQ4_XS.gguf"
+        get() = "/data/local/tmp/llm/stablelm-zephyr-3b.Q5_K_M.gguf"
 
     override suspend fun generateResponseAsync(text: String) {
         llamaAndroid.send( "tell me something about Napoleon")
