@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 29
+        minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -20,6 +20,9 @@ android {
             cmake {
                 arguments += "-DLLAMA_BUILD_COMMON=ON"
                 arguments += "-DCMAKE_BUILD_TYPE=Release"
+                arguments += "-DLLAMA_AVX2=ON"
+                arguments += "-DLLAMA_BLAS=ON"
+                arguments += "-DLLAMA_BLAS_VENDOR=OpenBLAS"
                 cppFlags += listOf()
                 arguments += listOf()
 
