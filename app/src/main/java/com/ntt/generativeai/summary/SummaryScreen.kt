@@ -1,6 +1,5 @@
 package com.ntt.generativeai.summary
 
-import android.content.IntentSender.OnFinished
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ntt.generativeai.createPdfFromText
-
+import com.ntt.generativeai.ui.theme.GenerativeAITheme
 
 @Composable
 fun SummaryScreen(result: String, hasFinished: Boolean) {
@@ -35,7 +34,7 @@ fun SummaryScreen(result: String, hasFinished: Boolean) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(15.dp)
+            .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(Modifier.height(20.dp))
@@ -43,17 +42,19 @@ fun SummaryScreen(result: String, hasFinished: Boolean) {
         Text(
             text = result,
         )
-        if (!hasFinished  && result.isEmpty())
+        if (!hasFinished && result.isEmpty())
             CircularProgressIndicator(
-                modifier = Modifier.width(64.dp).align(Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .width(64.dp)
+                    .align(Alignment.CenterHorizontally),
                 color = MaterialTheme.colorScheme.secondary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
             )
-            else{
+        else {
             Row(modifier = Modifier.fillMaxWidth(), Arrangement.Center) {
                 Button(
                     onClick = {
-                       // uiState.summary.createPdfFromText(context)
+                         result.createPdfFromText(context)
                     },
                     modifier = Modifier
                         .padding(16.dp),
@@ -68,6 +69,16 @@ fun SummaryScreen(result: String, hasFinished: Boolean) {
 
 @Preview
 @Composable
-private fun Prev() {
-    SummaryScreen("", false)
+private fun EmptySummaryPreview() {
+    GenerativeAITheme {
+        SummaryScreen("", false)
+    }
+}
+
+@Preview
+@Composable
+private fun SummayPreview() {
+    GenerativeAITheme {
+        SummaryScreen("Test", true)
+    }
 }
